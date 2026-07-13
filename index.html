@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>동구대전마블 🔥</title>
+<title>동구대전마블 🚄</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -123,12 +123,36 @@ input.txt:focus{outline:2px solid var(--soju)}
 .tile.flash{animation:flash .5s ease 2}
 @keyframes flash{50%{filter:brightness(1.6) saturate(1.4);transform:scale(1.08)}}
 .tokens{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);display:flex;z-index:3}
+.tokenwrap{position:relative;display:inline-block;line-height:0}
+.tokenwrap+.tokenwrap{margin-left:-16px}
+.tokenwrap .crown{
+  position:absolute;top:-16px;left:50%;
+  font-size:clamp(15px,4.5vw,22px);line-height:1;
+  animation:crownfloat 1.4s ease-in-out infinite;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));
+  pointer-events:none;z-index:5;transform-origin:center bottom;
+}
+@keyframes crownfloat{
+  0%,100%{transform:translateX(-50%) translateY(0) rotate(-4deg)}
+  50%{transform:translateX(-50%) translateY(-4px) rotate(4deg)}
+}
+.chooseUI{display:none;gap:10px;justify-content:center;flex-wrap:wrap;padding:6px 4px 4px}
+.chooseUI.show{display:flex}
+.choosebtn{
+  background:rgba(0,0,0,.35);border:2px solid rgba(245,192,68,.6);
+  padding:7px 10px 6px;border-radius:14px;color:var(--paper);
+  font-family:'Black Han Sans';font-size:12px;text-align:center;
+  transition:transform .08s;cursor:pointer;min-width:70px;
+}
+.choosebtn:active{transform:scale(.94)}
+.choosebtn img{width:38px;height:38px;border-radius:50%;border:2px solid var(--wood);object-fit:cover;background:#000}
+.choosebtn .lbl{font-size:10.5px;color:#F5C044;margin-top:3px;letter-spacing:.3px}
 .token{
   width:clamp(30px,9vw,44px);height:clamp(30px,9vw,44px);border-radius:50%;
   border:3px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.6);object-fit:cover;background:#000;
   transition:transform .2s cubic-bezier(.2,1.6,.4,1);
 }
-.token+.token{margin-left:-16px}
+.token+.token{margin-left:0}
 .tokens.turn .token{animation:bounce .55s infinite alternate;border-color:var(--wood);box-shadow:0 3px 14px rgba(245,192,68,.75)}
 @keyframes bounce{to{transform:translateY(-5px)}}
 .token.hopping{animation:hop .3s cubic-bezier(.3,1.6,.5,1);z-index:6}
@@ -264,6 +288,27 @@ input.txt:focus{outline:2px solid var(--soju)}
 .editrow .no{font-family:'Black Han Sans';width:24px;color:#B4581E;font-size:14px;flex:none;text-align:right}
 .editrow input{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid #E4CFA3;background:#fff;font-size:13.5px;font-family:inherit;min-width:0}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+.rankings{margin:14px 0;display:flex;flex-direction:column;gap:7px;text-align:left}
+.rankrow{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:11px;
+  background:rgba(255,246,230,.06);
+  border:1px solid rgba(255,246,230,.14);
+}
+.rankrow .medal{font-size:22px;width:28px;text-align:center;flex:none}
+.rankrow .faces{display:flex}
+.rankrow .rface{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.5);object-fit:cover;background:#000}
+.rankrow .rface+.rface{margin-left:-9px}
+.rankrow .rname{flex:1;font-size:14px;font-weight:700;color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rankrow .rprog{font-size:11.5px;color:#BFA9E8;font-weight:700}
+.rankrow.first{
+  background:linear-gradient(90deg,rgba(245,192,68,.28),rgba(245,192,68,.08));
+  border-color:var(--wood);
+  box-shadow:0 0 18px rgba(245,192,68,.25);
+}
+.rankrow.first .rname{color:var(--wood)}
+.rankrow.last{opacity:.7}
+.rankrow.last .rname{color:#FF7A8C}
 .confetti i{position:absolute;top:-20px;width:10px;height:14px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 @media (prefers-reduced-motion: reduce){*{animation-duration:.01s !important;transition-duration:.01s !important}}
@@ -286,7 +331,7 @@ input.txt:focus{outline:2px solid var(--soju)}
 <!-- ═══ 홈 ═══ -->
 <div class="wrap" id="home" style="display:none">
   <h1 class="title">동구대전마블</h1>
-  <div class="subtitle">🔥 동구 6인 전용 · 윷 던지는 술게임 🍶</div>
+  <div class="subtitle">🚄 동구 6인 기관사 · 윷 던지는 술게임 🍶</div>
 
   <div class="card">
     <h2>🏮 새 판 만들기</h2>
@@ -350,7 +395,7 @@ input.txt:focus{outline:2px solid var(--soju)}
 <!-- ═══ 게임 ═══ -->
 <div id="game">
   <div class="topbar">
-    <div class="logo">동구대전마블 🔥</div>
+    <div class="logo">동구대전마블 🚄</div>
     <div class="room">방 <b id="roomLabel"></b> · <span id="meLabel"></span></div>
     <button class="btn ghost" style="width:auto;padding:7px 12px;font-size:13px" onclick="openEditor()">✏️</button>
   </div>
@@ -362,6 +407,7 @@ input.txt:focus{outline:2px solid var(--soju)}
       <div class="turnsub" id="turnSub"></div>
       <div class="sticks" id="sticks"></div>
       <button class="throwbtn" id="throwBtn" onclick="throwYut()">윷 던지기!</button>
+      <div class="chooseUI" id="chooseUI"></div>
       <div class="waitnote" id="waitNote"></div>
       <div class="stamp" id="stamp"><div class="big" id="stampBig"></div><div class="small" id="stampSmall"></div></div>
     </div>
@@ -400,6 +446,7 @@ input.txt:focus{outline:2px solid var(--soju)}
   <div class="modal dark">
     <div class="em">🏆</div>
     <h2 id="winText" style="color:var(--wood)"></h2>
+    <div class="rankings" id="rankings"></div>
     <div class="who" style="color:#BFA9E8">진 사람들 전원 벌주 한 잔으로 마무리 🍶</div>
     <button class="btn" id="againBtn" onclick="hostAgain()">같은 설정으로 한 판 더</button>
     <button class="btn ghost" onclick="location.reload()">나가기</button>
@@ -458,9 +505,9 @@ const POOL={
  ]
 };
 const CORNERS={
- 0:{em:'🚩',txt:'출발! (안전지대)',cat:'safe'},
- 6:{em:'⛺',txt:'쉼터: 물 한 잔 마시며 휴식 (안전지대)',cat:'safe'},
- 12:{em:'🔑',txt:'황금열쇠! 랜덤 미션 뽑기',cat:'special'},
+ 0:{em:'🚦',txt:'출발! 진로 개통 (안전지대)',cat:'safe'},
+ 6:{em:'🚉',txt:'기차역 정차 · 물 한 잔 마시며 휴식 (안전지대)',cat:'safe'},
+ 12:{em:'🎫',txt:'황금열쇠! 랜덤 미션 뽑기',cat:'special'},
  18:{em:'🔥',txt:'원샷존! 무조건 원샷',cat:'special'}
 };
 const CATMETA={
@@ -518,7 +565,7 @@ function myName(){
   return null;
 }
 function isMyTurn(){
-  return state&&state.phase==='throw'&&state.turnList&&state.turnList[state.turnPtr]===myName();
+  return state&&(state.phase==='throw'||state.phase==='choose')&&state.turnList&&state.turnList[state.turnPtr]===myName();
 }
 
 /* ═══════════ 방 생성/참가 ═══════════ */
@@ -596,11 +643,44 @@ function applyState(st){
   if(st.last&&(!prev||!prev.last||prev.last.eid!==st.last.eid)&&prev&&prev.phase!=='lobby'){
     playThrowSequence(st);
   }else{
-    renderTokens(unitPositions(st));
+    renderTokens(allPiecePositions(st));
     syncModals(st);
   }
 }
-function unitPositions(st){return (st.units||[]).map(u=>u.pos)}
+function allPiecePositions(st){
+  const arr=[];
+  (st.units||[]).forEach((u,ui)=>(u.pieces||[]).forEach((p,pi)=>arr.push({ui,pi,pos:p.pos,laps:p.laps})));
+  return arr;
+}
+function pieceOwner(unit,pi,mode){
+  if(mode==='team'&&unit.members.length>1)return unit.members[Math.floor(pi/2)]||unit.members[0];
+  return unit.members[0];
+}
+function findLeader(st){
+  if(!st||!st.units)return null;
+  let best=-1,leader=null;
+  st.units.forEach((u,ui)=>u.pieces.forEach((p,pi)=>{
+    const score=p.laps*N+p.pos;
+    if(score>best){best=score;leader={ui,pi};}
+  }));
+  if(best===0)return null;
+  return leader;
+}
+function computeRanking(st,winnerIdx){
+  const scored=st.units.map((u,i)=>({
+    idx:i,label:u.label,members:u.members,
+    score:u.pieces.reduce((s,p)=>s+p.laps*N+p.pos,0),
+    done:u.pieces.filter(p=>p.laps>=st.config.laps).length,
+    total:u.pieces.length,
+    isWinner:i===winnerIdx
+  }));
+  scored.sort((a,b)=>{
+    if(a.isWinner)return -1;
+    if(b.isWinner)return 1;
+    return b.score-a.score;
+  });
+  return scored;
+}
 
 /* ═══════════ 대기실 ═══════════ */
 function renderLobby(){
@@ -692,17 +772,18 @@ window.hostStart=async function(){
 
   const st=JSON.parse(JSON.stringify(state));
   const order=PLAYERS.map(p=>p.name).filter(n=>joined.includes(n));
+  const mkPieces=(n)=>Array.from({length:n},()=>({pos:0,laps:0}));
   if(mode==='solo'){
-    st.units=order.map(n=>({members:[n],pos:0,laps:0,label:n}));
+    st.units=order.map(n=>({members:[n],pieces:mkPieces(2),label:n}));
     st.turnList=order;
   }else{
     const tm=[[],[],[]];
     PLAYERS.forEach(p=>{tm[st.teams[p.name]||0].push(p.name)});
-    st.units=tm.map((m,i)=>({members:m,pos:0,laps:0,label:TEAMNAME[i]+' ('+m.join('·')+')'}));
+    st.units=tm.map((m,i)=>({members:m,pieces:mkPieces(4),label:TEAMNAME[i]+' ('+m.join('·')+')'}));
     st.turnList=[tm[0][0],tm[1][0],tm[2][0],tm[0][1],tm[1][1],tm[2][1]];
   }
-  st.turnPtr=0;st.last=null;st.phase='throw';
-  st.logs=[`🔥 동구대전 개막! <b>${st.turnList[0]}</b>부터 던집니다`];
+  st.turnPtr=0;st.last=null;st.pending=null;st.phase='throw';
+  st.logs=[`🚄 동구대전 개막! <b>${st.turnList[0]}</b>부터 던집니다`];
   st.seq++;
   await set(roomRef(),st);
 };
@@ -751,17 +832,27 @@ function updateTileFaces(){
 }
 function renderTokens(positions){
   document.querySelectorAll('.tile .tokens').forEach(el=>{el.innerHTML='';el.classList.remove('turn')});
+  if(!state||!state.units)return;
   const curUnit=state.turnList?unitOfPlayer(state,state.turnList[state.turnPtr]):-1;
-  positions.forEach((pos,ui)=>{
-    const holder=document.querySelector(`.tile[data-idx="${pos}"] .tokens`);
+  const leader=findLeader(state);
+  positions.forEach(p=>{
+    const holder=document.querySelector(`.tile[data-idx="${p.pos}"] .tokens`);
     if(!holder)return;
-    state.units[ui].members.forEach(n=>{
-      const img=document.createElement('img');
-      img.className='token';img.src=IMG[n];img.alt=n;
-      img.dataset.unit=ui;
-      holder.appendChild(img);
-    });
-    if(ui===curUnit)holder.classList.add('turn');
+    const unit=state.units[p.ui];
+    const name=pieceOwner(unit,p.pi,state.config.mode);
+    const wrap=document.createElement('span');
+    wrap.className='tokenwrap';
+    const img=document.createElement('img');
+    img.className='token';img.src=IMG[name];img.alt=name;
+    img.dataset.unit=p.ui;img.dataset.piece=p.pi;
+    wrap.appendChild(img);
+    if(leader&&leader.ui===p.ui&&leader.pi===p.pi){
+      const cr=document.createElement('span');
+      cr.className='crown';cr.textContent='👑';
+      wrap.appendChild(cr);
+    }
+    holder.appendChild(wrap);
+    if(p.ui===curUnit)holder.classList.add('turn');
   });
 }
 function renderPbar(){
@@ -770,8 +861,9 @@ function renderPbar(){
   state.units.forEach((u,i)=>{
     const c=document.createElement('div');
     c.className='pchip'+(i===curUnit?' now':'');
+    const done=u.pieces.filter(p=>p.laps>=state.config.laps).length;
     c.innerHTML=`<div class="faces">${u.members.map(n=>`<img class="face" src="${IMG[n]}" alt="${n}">`).join('')}</div>
-      <div class="nm">${u.members.join('·')}</div><div class="lp">${u.laps}/${state.config.laps}바퀴</div>`;
+      <div class="nm">${u.members.join('·')}</div><div class="lp">완주 ${done}/${u.pieces.length}말</div>`;
     el.appendChild(c);
   });
 }
@@ -781,8 +873,10 @@ function renderTurn(){
   document.getElementById('turnFace').src=IMG[name];
   document.getElementById('turnName').textContent=(name===myName()?'내 차례!':name+' 차례');
   const ui=unitOfPlayer(state,name);
+  const unit=state.units[ui];
+  const done=unit.pieces.filter(p=>p.laps>=state.config.laps).length;
   document.getElementById('turnSub').textContent=
-    (state.config.mode==='team'?state.units[ui].label+' · ':'')+`${state.units[ui].laps}/${state.config.laps}바퀴`;
+    (state.config.mode==='team'?unit.label+' · ':'')+`완주 ${done}/${unit.pieces.length}말 (${state.config.laps}바퀴)`;
 }
 function renderLog(){
   document.getElementById('log').innerHTML=(state.logs||[]).slice(0,20).map(l=>`<div>${l}</div>`).join('');
@@ -790,8 +884,23 @@ function renderLog(){
 function updateThrowUI(){
   const btn=document.getElementById('throwBtn');
   const note=document.getElementById('waitNote');
+  const chooseEl=document.getElementById('chooseUI');
   const mine=isMyTurn()&&!animating;
-  btn.disabled=!mine;
+  if(state.phase==='choose'){
+    btn.style.display='none';
+    if(mine){
+      chooseEl.classList.add('show');
+      renderChooseUI();
+      note.innerHTML='이동시킬 말을 골라주세요 👇';
+    }else{
+      chooseEl.classList.remove('show');
+      note.innerHTML=`<b>${state.pending?state.pending.thrower:'?'}</b>이(가) 말 고르는 중...`;
+    }
+    return;
+  }
+  chooseEl.classList.remove('show');
+  btn.style.display='';
+  btn.disabled=!(mine&&state.phase==='throw');
   if(state.phase==='throw'){
     const name=state.turnList[state.turnPtr];
     note.innerHTML=mine
@@ -801,40 +910,113 @@ function updateThrowUI(){
     note.innerHTML=`<b>${state.last.player}</b> 미션 수행 중 🍶`;
   }else note.textContent='';
 }
+function renderChooseUI(){
+  const el=document.getElementById('chooseUI');el.innerHTML='';
+  const p=state.pending;if(!p)return;
+  const unit=state.units[p.unitIdx];
+  p.choosable.forEach(pi=>{
+    const piece=unit.pieces[pi];
+    const btn=document.createElement('button');
+    btn.className='choosebtn';
+    const name=pieceOwner(unit,pi,state.config.mode);
+    const spot=piece.pos===0?'출발점':piece.pos+'번 칸';
+    btn.innerHTML=`<img src="${IMG[name]}" alt=""><div class="lbl">${spot}</div>`;
+    btn.onclick=()=>choosePiece(pi);
+    el.appendChild(btn);
+  });
+}
 
-/* ═══════════ 윷 던지기 ═══════════ */
+/* ═══════════ 윷 던지기 (1단계: 결과만 저장) ═══════════ */
 window.throwYut=async function(){
-  if(!isMyTurn()||animating)return;
+  if(!isMyTurn()||animating||state.phase!=='throw')return;
   if(navigator.vibrate)navigator.vibrate(60);
   const flats=[0,0,0,0].map(()=>Math.random()<0.55?1:0);
   let cnt=flats.reduce((a,b)=>a+b,0);
   let move=cnt===0?5:cnt;
   if(state.config.backdo&&cnt===1&&flats[0]===1)move=-1;
 
-  const st=JSON.parse(JSON.stringify(state));
   const name=myName();
-  const ui=unitOfPlayer(st,name);
+  const ui=unitOfPlayer(state,name);
+  const unit=state.units[ui];
+  // 이동 가능한 말 찾기
+  let choosable=[];
+  if(move===-1){
+    unit.pieces.forEach((p,i)=>{if(p.pos>0)choosable.push(i);});
+  }else{
+    choosable=unit.pieces.map((_,i)=>i);
+  }
+
+  // 이동 불가 (빽도인데 모두 출발점)
+  if(choosable.length===0){
+    const st=JSON.parse(JSON.stringify(state));
+    const[nm]=YUT_NAMES[move];
+    st.logs=st.logs||[];
+    st.logs.unshift(`🎲 <b>${name}</b> → <b>${nm}</b>! 이동 불가 😅`);
+    st.logs=st.logs.slice(0,20);
+    st.last={eid:Date.now()+'-'+myId,player:name,unitIdx:ui,pieceIdx:0,move,flats,
+      from:allPiecePositions(st),captures:[],extra:false,mission:null,winner:null,noMove:true};
+    st.turnPtr=(st.turnPtr+1)%st.turnList.length;
+    st.phase='throw';st.pending=null;st.seq++;
+    try{await set(roomRef(),st);}catch(e){toast('전송 실패!');}
+    return;
+  }
+
+  // 자동 선택: 하나뿐이거나, 모든 선택지가 같은 위치일 때
+  const posSet=new Set(choosable.map(i=>unit.pieces[i].pos));
+  const auto=choosable.length===1||posSet.size===1;
+  if(auto){
+    await executeMovement(choosable[0],move,flats,ui,name);
+  }else{
+    // 선택 단계로 전환
+    const st=JSON.parse(JSON.stringify(state));
+    st.pending={thrower:name,unitIdx:ui,move,flats,choosable};
+    st.phase='choose';st.seq++;
+    try{await set(roomRef(),st);}catch(e){toast('전송 실패!');}
+  }
+};
+
+/* ═══════════ 윷 던지기 (2단계: 말 선택 후 실행) ═══════════ */
+window.choosePiece=async function(pi){
+  if(!isMyTurn()||animating||state.phase!=='choose')return;
+  const p=state.pending;if(!p)return;
+  if(!p.choosable.includes(pi))return;
+  await executeMovement(pi,p.move,p.flats,p.unitIdx,p.thrower);
+};
+
+async function executeMovement(pieceIdx,move,flats,ui,name){
+  const st=JSON.parse(JSON.stringify(state));
   const unit=st.units[ui];
-  const from=unitPositions(st);
+  const piece=unit.pieces[pieceIdx];
+  const from=allPiecePositions(st);
   let lapped=false;
-  if(move===-1){if(unit.pos>0)unit.pos--;}
-  else for(let s=0;s<move;s++){unit.pos++;if(unit.pos>=N){unit.pos=0;unit.laps++;lapped=true;}}
+  if(move===-1){if(piece.pos>0)piece.pos--;}
+  else for(let s=0;s<move;s++){piece.pos++;if(piece.pos>=N){piece.pos=0;piece.laps++;lapped=true;}}
 
+  // 우승 판정: 모든 말이 지정 바퀴 완주
   let winner=null;
-  if(lapped&&unit.laps>=st.config.laps)winner=unit.label;
+  const allDone=unit.pieces.every(p=>p.laps>=st.config.laps);
+  if(allDone)winner=unit.label;
 
-  let captures=[]; // 잡힌 멤버 이름들
-  if(!winner&&unit.pos!==0&&unit.pos!==6){
+  // 잡기 (안전지대 0,6 제외)
+  let captureNames=[];
+  if(!winner&&piece.pos!==0&&piece.pos!==6){
     st.units.forEach((o,i)=>{
-      if(i!==ui&&o.pos===unit.pos){captures.push(...o.members);o.pos=0;}
+      if(i===ui)return;
+      o.pieces.forEach((op,opi)=>{
+        if(op.pos===piece.pos&&op.pos!==0){
+          captureNames.push(pieceOwner(o,opi,st.config.mode));
+          op.pos=0;
+        }
+      });
     });
   }
-  const extra=!winner&&(move>=4||captures.length>0);
+  const extra=!winner&&(move>=4||captureNames.length>0);
 
+  // 미션
   let mission=null;
   if(!winner){
-    let t=st.tiles[unit.pos],catKey=t.cat;
-    if(unit.pos===12){
+    let t=st.tiles[piece.pos],catKey=t.cat;
+    if(piece.pos===12){
       const all=[];
       for(const cat of ['drink','penalty','chance'])POOL[cat].forEach(m=>all.push({em:m[0],txt:m[1],cat}));
       const pick=all[Math.floor(Math.random()*all.length)];
@@ -846,22 +1028,25 @@ window.throwYut=async function(){
   const[nm]=YUT_NAMES[move];
   st.logs=st.logs||[];
   st.logs.unshift(`🎲 <b>${name}</b> → <b>${nm}</b>!`
-    +(captures.length?` 💥 ${captures.map(n=>`<b>${n}</b>`).join(',')} 잡음! (전원 벌주🍶)`:'')
-    +(lapped?' 🏁 한 바퀴!':''));
+    +(captureNames.length?` 💥 ${captureNames.map(n=>`<b>${n}</b>`).join(',')} 잡음! (전원 벌주🍶)`:'')
+    +(lapped?` 🚉 ${pieceIdx+1}번 말 ${piece.laps}바퀴 완주!`:''));
   if(winner)st.logs.unshift(`🏆 <b>${winner}</b> 우승!!`);
   st.logs=st.logs.slice(0,20);
 
-  st.last={eid:Date.now()+'-'+myId,player:name,unitIdx:ui,move,flats,from,captures,extra:!!extra,mission,winner:winner||null};
+  st.last={eid:Date.now()+'-'+myId,player:name,unitIdx:ui,pieceIdx,move,flats,from,
+    captures:captureNames,extra:!!extra,mission,winner:winner||null,
+    ranking:winner?computeRanking(st,ui):null};
+  st.pending=null;
   st.phase=winner?'end':'mission';
   st.seq++;
-  try{await set(roomRef(),st);}catch(e){toast('전송 실패! 다시 던져주세요');}
-};
+  try{await set(roomRef(),st);}catch(e){toast('전송 실패! 다시 시도해주세요');}
+}
 
 /* ═══════════ 연출 ═══════════ */
 function playThrowSequence(st){
   animating=true;updateThrowUI();closeAllModals();
   const L=st.last;
-  const fromPos=L.from.slice();
+  const fromPos=L.from.slice();  // [{ui,pi,pos,laps}, ...]
   renderTokens(fromPos);
   for(let i=0;i<4;i++){
     const el=document.getElementById('stick'+i);
@@ -881,34 +1066,47 @@ function playThrowSequence(st){
     }
     setTimeout(()=>stamp.classList.remove('show'),1000);
   },780);
+  // 이동 불가면 스탬프만 보여주고 다음 턴으로
+  if(L.noMove){
+    return setTimeout(()=>{
+      animating=false;
+      if(pendingState){const p=pendingState;pendingState=null;applyState(p);return;}
+      renderTokens(allPiecePositions(st));renderPbar();renderTurn();updateThrowUI();
+    },1800);
+  }
   setTimeout(()=>{
-    const ui=L.unitIdx;
-    const target=st.units[ui].pos;
-    let cursor=fromPos[ui];
+    const ui=L.unitIdx, pi=L.pieceIdx;
+    const target=st.units[ui].pieces[pi].pos;
+    const idx=fromPos.findIndex(f=>f.ui===ui&&f.pi===pi);
+    if(idx<0)return afterMove(st);
+    let cursor=fromPos[idx].pos;
     if(L.move===-1){
-      fromPos[ui]=target;renderTokens(fromPos);
-      hopTokens(target,ui);
+      fromPos[idx].pos=target;renderTokens(fromPos);
+      hopTokens(target,ui,pi);
       return setTimeout(()=>afterMove(st),400);
     }
     const iv=setInterval(()=>{
-      cursor=(cursor+1)%N;fromPos[ui]=cursor;renderTokens(fromPos);
-      hopTokens(cursor,ui);
+      cursor=(cursor+1)%N;fromPos[idx].pos=cursor;renderTokens(fromPos);
+      hopTokens(cursor,ui,pi);
       if(cursor===target){clearInterval(iv);afterMove(st);}
     },280);
   },1850);
 }
-function hopTokens(pos,ui){
+function hopTokens(pos,ui,pi){
   const holder=document.querySelector(`.tile[data-idx="${pos}"] .tokens`);
   if(!holder)return;
-  holder.querySelectorAll(`.token[data-unit="${ui}"]`).forEach(t=>{
+  const sel=pi!==undefined
+    ?`.token[data-unit="${ui}"][data-piece="${pi}"]`
+    :`.token[data-unit="${ui}"]`;
+  holder.querySelectorAll(sel).forEach(t=>{
     t.classList.remove('hopping');void t.offsetWidth;
     t.classList.add('hopping');
     setTimeout(()=>t.classList.remove('hopping'),300);
   });
 }
 function afterMove(st){
-  renderTokens(unitPositions(st));
-  const pos=st.units[st.last.unitIdx].pos;
+  renderTokens(allPiecePositions(st));
+  const pos=st.units[st.last.unitIdx].pieces[st.last.pieceIdx].pos;
   const tileEl=document.querySelector(`.tile[data-idx="${pos}"]`);
   if(tileEl){tileEl.classList.add('flash');setTimeout(()=>tileEl.classList.remove('flash'),1100);}
   if(st.last.captures&&st.last.captures.length&&tileEl){
@@ -952,11 +1150,27 @@ function syncModals(st){
   }
   if(st.phase==='end'&&st.last&&st.last.winner){
     document.querySelectorAll(`.token[data-unit="${st.last.unitIdx}"]`).forEach(t=>t.classList.add('winning'));
-    document.getElementById('winText').textContent=st.last.winner+' 우승!';
+    document.getElementById('winText').innerHTML='🚄 '+st.last.winner+' 우승!';
+    renderRankings(st.last.ranking);
     document.getElementById('againBtn').style.display=isHost()?'block':'none';
     document.getElementById('winBg').classList.add('show');
     confetti();
   }
+}
+function renderRankings(ranking){
+  const el=document.getElementById('rankings');el.innerHTML='';
+  if(!ranking||!ranking.length)return;
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣'];
+  ranking.forEach((r,i)=>{
+    const row=document.createElement('div');
+    row.className='rankrow'+(i===0?' first':'')+(i===ranking.length-1&&ranking.length>2?' last':'');
+    row.innerHTML=
+      `<div class="medal">${medals[i]||''}</div>`+
+      `<div class="faces">${r.members.map(n=>`<img class="rface" src="${IMG[n]}" alt="">`).join('')}</div>`+
+      `<div class="rname">${r.label}</div>`+
+      `<div class="rprog">완주 ${r.done}/${r.total}</div>`;
+    el.appendChild(row);
+  });
 }
 function closeAllModals(){
   document.getElementById('missionBg').classList.remove('show');
@@ -1024,9 +1238,9 @@ window.shuffleMissions=async function(){
 window.hostAgain=async function(){
   if(!isHost())return;
   const st=JSON.parse(JSON.stringify(state));
-  st.units.forEach(u=>{u.pos=0;u.laps=0;});
-  st.tiles=buildTiles();st.turnPtr=0;st.last=null;st.phase='throw';
-  st.logs=[`🔄 한 판 더! <b>${st.turnList[0]}</b>부터!`];
+  st.units.forEach(u=>u.pieces.forEach(p=>{p.pos=0;p.laps=0;}));
+  st.tiles=buildTiles();st.turnPtr=0;st.last=null;st.pending=null;st.phase='throw';
+  st.logs=[`🚂 한 판 더! <b>${st.turnList[0]}</b>부터!`];
   st.seq++;
   await set(roomRef(),st);
 };
