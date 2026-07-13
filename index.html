@@ -774,12 +774,12 @@ window.hostStart=async function(){
   const order=PLAYERS.map(p=>p.name).filter(n=>joined.includes(n));
   const mkPieces=(n)=>Array.from({length:n},()=>({pos:0,laps:0}));
   if(mode==='solo'){
-    st.units=order.map(n=>({members:[n],pieces:mkPieces(2),label:n}));
+    st.units=order.map(n=>({members:[n],pieces:mkPieces(1),label:n}));
     st.turnList=order;
   }else{
     const tm=[[],[],[]];
     PLAYERS.forEach(p=>{tm[st.teams[p.name]||0].push(p.name)});
-    st.units=tm.map((m,i)=>({members:m,pieces:mkPieces(4),label:TEAMNAME[i]+' ('+m.join('·')+')'}));
+    st.units=tm.map((m,i)=>({members:m,pieces:mkPieces(2),label:TEAMNAME[i]+' ('+m.join('·')+')'}));
     st.turnList=[tm[0][0],tm[1][0],tm[2][0],tm[0][1],tm[1][1],tm[2][1]];
   }
   st.turnPtr=0;st.last=null;st.pending=null;st.phase='throw';
