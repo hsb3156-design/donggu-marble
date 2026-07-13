@@ -100,29 +100,28 @@ input.txt:focus{outline:2px solid var(--soju)}
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:4px 4px 10px;gap:8px}
 .topbar .logo{font-family:'Black Han Sans';font-size:17px;color:var(--wood);white-space:nowrap}
 .topbar .room{font-size:11.5px;color:#BFA9E8;font-weight:700}
+/* 보드 (지하철 노선도) */
 .board{
   position:relative;width:100%;aspect-ratio:1;
-  display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);
-  gap:3px;padding:8px;border-radius:20px;
-  background:linear-gradient(160deg,#2E1F52,#1C1338);
+  background:#F5F1E6;
+  border-radius:20px;padding:6px;
   border:2px solid rgba(245,192,68,.35);
-  box-shadow:0 0 40px rgba(157,123,255,.15),inset 0 0 30px rgba(0,0,0,.4);
+  box-shadow:0 0 40px rgba(157,123,255,.15);
+  overflow:visible;
 }
-.tile{
-  position:relative;border-radius:8px;background:var(--paper);color:var(--ink);
-  display:flex;align-items:center;justify-content:center;
-  user-select:none;border-bottom:3px solid rgba(0,0,0,.18);
+#boardSvg{width:100%;height:100%;display:block}
+.station{cursor:pointer;transform-box:fill-box;transform-origin:center}
+.station > circle, .station > rect{transform-box:fill-box;transform-origin:center;transition:filter .2s}
+.station.flash > circle, .station.flash > rect{animation:stflash .5s ease 2}
+@keyframes stflash{50%{transform:scale(1.5);filter:brightness(1.4) drop-shadow(0 0 6px #F5C044)}}
+.tokens-layer{position:absolute;top:6px;left:6px;right:6px;bottom:6px;pointer-events:none}
+.tokens{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  display:flex;justify-content:center;align-items:center;
+  z-index:5;
 }
-.tile .em{font-size:clamp(13px,4vw,20px)}
-.tile.cat-drink{background:linear-gradient(180deg,#D8FBE9,#A8F0CB)}
-.tile.cat-penalty{background:linear-gradient(180deg,#FFE0E4,#FFB9C2)}
-.tile.cat-chance{background:linear-gradient(180deg,#FFF3C9,#FFDF8A)}
-.tile.cat-special{background:linear-gradient(180deg,#E8DEFF,#C8B4FF)}
-.tile.cat-safe{background:linear-gradient(180deg,#D9F2FF,#A8DFFA)}
-.tile.corner{border-radius:12px;box-shadow:0 0 0 2px var(--wood),0 0 14px rgba(245,192,68,.4)}
-.tile.flash{animation:flash .5s ease 2}
-@keyframes flash{50%{filter:brightness(1.6) saturate(1.4);transform:scale(1.08)}}
-.tokens{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);display:flex;z-index:3}
+.tokens.turn{z-index:6}
 .tokenwrap{position:relative;display:inline-block;line-height:0}
 .tokenwrap+.tokenwrap{margin-left:-16px}
 .tokenwrap .crown{
@@ -188,9 +187,14 @@ input.txt:focus{outline:2px solid var(--soju)}
   100%{opacity:0;transform:translate(-50%,-140%) scale(2.2) rotate(360deg)}
 }
 .center{
-  grid-column:2/7;grid-row:2/7;border-radius:16px;position:relative;padding:6px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
-  background:radial-gradient(circle at 50% 30%,rgba(245,192,68,.1),transparent 70%);
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(36,26,56,.94);
+  border:2px solid var(--wood);
+  border-radius:16px;padding:10px 14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  z-index:10;min-width:170px;max-width:60%;
+  box-shadow:0 6px 30px rgba(0,0,0,.5);
 }
 .turnface{width:clamp(38px,11vw,52px);height:clamp(38px,11vw,52px);border:3px solid var(--wood);box-shadow:0 0 14px rgba(245,192,68,.5)}
 .turnname{font-family:'Black Han Sans';font-size:clamp(16px,5vw,23px);text-align:center;line-height:1.1}
@@ -505,25 +509,43 @@ const POOL={
  ]
 };
 const CORNERS={
- 0:{em:'🚦',txt:'출발! 진로 개통 (안전지대)',cat:'safe'},
- 6:{em:'🚉',txt:'기차역 정차 · 물 한 잔 마시며 휴식 (안전지대)',cat:'safe'},
- 12:{em:'🎫',txt:'황금열쇠! 랜덤 미션 뽑기',cat:'special'},
- 18:{em:'🔥',txt:'원샷존! 무조건 원샷',cat:'special'}
+ 0:{em:'🚦',txt:'광운대 출발! 진로 개통 (안전지대)',cat:'safe'},
+ 6:{em:'🚉',txt:'동대문 정차 · 물 한 잔 마시며 휴식 (안전지대)',cat:'safe'},
+ 12:{em:'🎫',txt:'서울역 황금열쇠! 랜덤 미션 뽑기',cat:'special'},
+ 18:{em:'🔥',txt:'혜화 원샷존! 무조건 원샷',cat:'special'}
 };
+const STATIONS=[
+  {name:'광운대',x:70,y:440,line:1},
+  {name:'회기',x:105,y:440,line:1},
+  {name:'청량리',x:140,y:440,line:1},
+  {name:'신설동',x:175,y:440,line:1},
+  {name:'종로5가',x:205,y:410,line:1},
+  {name:'종로3가',x:235,y:380,line:1},
+  {name:'동대문',x:295,y:380,line:1},
+  {name:'종각',x:335,y:380,line:1},
+  {name:'시청',x:395,y:345,line:1},
+  {name:'남영',x:430,y:290,line:1},
+  {name:'용산',x:430,y:240,line:1},
+  {name:'구로',x:430,y:195,line:1,star:true},
+  {name:'서울역',x:380,y:145,line:1},
+  {name:'숙대입구',x:340,y:105,line:4},
+  {name:'삼각지',x:300,y:105,line:4},
+  {name:'이촌',x:260,y:105,line:4},
+  {name:'동작',x:215,y:105,line:4,star:true},
+  {name:'사당',x:175,y:105,line:4},
+  {name:'혜화',x:115,y:140,line:4},
+  {name:'명동',x:65,y:190,line:4},
+  {name:'충무로',x:65,y:235,line:4},
+  {name:'성신여대',x:65,y:280,line:4},
+  {name:'길음',x:65,y:325,line:4},
+  {name:'미아사거리',x:65,y:370,line:4}
+];
 const CATMETA={
  drink:{label:'술게임',color:'#0E9B60'},penalty:{label:'벌칙 · 복불복',color:'#E23A4E'},
  chance:{label:'찬스',color:'#D89B2E'},special:{label:'스페셜',color:'#7B4FE0'},safe:{label:'안전지대',color:'#2E9BD6'}
 };
 const YUT_NAMES={'-1':['빽도','뒤로 1칸'],1:['도','1칸'],2:['개','2칸'],3:['걸','3칸'],4:['윷','4칸 +한번더'],5:['모','5칸 +한번더']};
 const N=24;
-function perimeterCells(){
-  const cells=[];
-  for(let i=0;i<7;i++)cells.push([6-i,0]);
-  for(let i=1;i<7;i++)cells.push([0,i]);
-  for(let i=1;i<7;i++)cells.push([i,6]);
-  for(let i=5;i>=1;i--)cells.push([6,i]);
-  return cells;
-}
 function buildTiles(){
   const tiles=new Array(N);
   for(const[i,c]of Object.entries(CORNERS))tiles[i]={...c};
@@ -797,21 +819,69 @@ function renderGameStatic(){
   document.getElementById('roomLabel').textContent=roomCode;
   const me=myName();
   document.getElementById('meLabel').innerHTML=me?`나: <b style="color:var(--wood)">${me}</b>`:'관전 모드';
-  if(!boardBuilt||document.querySelectorAll('.tile').length===0){buildBoardDOM();boardBuilt=true;}
-  updateTileFaces();
+  if(!boardBuilt||document.querySelectorAll('.station').length===0){buildBoardDOM();boardBuilt=true;}
   renderPbar();renderTurn();renderLog();updateThrowUI();
+}
+function stationLabelPos(idx){
+  const s=STATIONS[idx];
+  if(idx===0)return{x:0,y:44,anchor:'middle'};
+  if(idx===6)return{x:0,y:-24,anchor:'middle'};
+  if(idx===12)return{x:26,y:0,anchor:'start'};
+  if(idx===18)return{x:0,y:-24,anchor:'middle'};
+  if(idx===11)return{x:16,y:4,anchor:'start'};
+  if(idx===16)return{x:0,y:-14,anchor:'middle'};
+  if(s.y>=430)return{x:0,y:30,anchor:'middle'};
+  if(s.x>=395)return{x:14,y:4,anchor:'start'};
+  if(s.y<=140)return{x:0,y:-14,anchor:'middle'};
+  if(s.x<=100)return{x:14,y:4,anchor:'start'};
+  if(s.y>=340)return{x:0,y:-14,anchor:'middle'};
+  return{x:0,y:-14,anchor:'middle'};
+}
+function renderStationSVG(idx){
+  const s=STATIONS[idx];const corner=CORNERS[idx];
+  let inner='';
+  if(corner){
+    let fill,stroke;
+    if(idx===0){fill='#F5C044';stroke='#0052A4';}
+    else if(idx===6){fill='#4FC3F7';stroke='#0052A4';}
+    else if(idx===12){fill='#FFC838';stroke='#0052A4';}
+    else{fill='#FF4D5E';stroke='#fff';}
+    inner+=`<rect x="-16" y="-16" width="32" height="32" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="4"/>`;
+    inner+=`<text y="5" text-anchor="middle" font-size="15">${corner.em}</text>`;
+  }else if(s.star){
+    inner+=`<circle r="10" fill="#FFF3C9" stroke="#F5C044" stroke-width="3"/>`;
+  }else{
+    inner+=`<circle r="8" fill="#fff" stroke="${s.line===1?'#0052A4':'#00A5DE'}" stroke-width="3"/>`;
+  }
+  const lp=stationLabelPos(idx);
+  const fs=corner?11:(s.name.length>=4?9:10);
+  const fw=(corner||s.star)?900:700;
+  inner+=`<text x="${lp.x}" y="${lp.y}" text-anchor="${lp.anchor}" font-size="${fs}" font-weight="${fw}" fill="#241A38">${s.name}</text>`;
+  return `<g class="station" data-idx="${idx}" transform="translate(${s.x},${s.y})">${inner}</g>`;
 }
 function buildBoardDOM(){
   const b=document.getElementById('board');
-  b.querySelectorAll('.tile').forEach(t=>t.remove());
-  perimeterCells().forEach(([r,c],idx)=>{
-    const t=document.createElement('div');
-    t.className='tile';
-    t.dataset.idx=idx;
-    t.style.gridRow=r+1;t.style.gridColumn=c+1;
-    t.innerHTML=`<span class="em"></span><div class="tokens"></div>`;
-    t.onclick=()=>peekTile(idx);
-    b.appendChild(t);
+  b.querySelectorAll('svg,.tokens-layer').forEach(el=>el.remove());
+  const stationsHTML=STATIONS.map((_,i)=>renderStationSVG(i)).join('');
+  const svg=`<svg id="boardSvg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans KR, sans-serif">
+    <g opacity=".07" stroke="#666" stroke-width=".6">
+      <line x1="0" y1="100" x2="500" y2="100"/><line x1="0" y1="200" x2="500" y2="200"/>
+      <line x1="0" y1="300" x2="500" y2="300"/><line x1="0" y1="400" x2="500" y2="400"/>
+      <line x1="100" y1="0" x2="100" y2="500"/><line x1="200" y1="0" x2="200" y2="500"/>
+      <line x1="300" y1="0" x2="300" y2="500"/><line x1="400" y1="0" x2="400" y2="500"/>
+    </g>
+    <path d="M 70 440 L 175 440 L 235 380 L 355 380 L 430 305 L 430 195 L 380 145" fill="none" stroke="#0052A4" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M 380 145 L 340 105 L 165 105 L 65 175 L 65 400" fill="none" stroke="#00A5DE" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M 65 400 Q 55 440 70 440" fill="none" stroke="#8AB4C8" stroke-width="4" stroke-dasharray="6 5" opacity=".7"/>
+    ${stationsHTML}
+  </svg>`;
+  const tokensHTML=STATIONS.map((s,idx)=>
+    `<div class="tokens" data-idx="${idx}" style="left:${s.x/500*100}%;top:${s.y/500*100}%;"></div>`
+  ).join('');
+  b.insertAdjacentHTML('afterbegin',svg);
+  b.insertAdjacentHTML('beforeend',`<div class="tokens-layer" id="tokensLayer">${tokensHTML}</div>`);
+  b.querySelectorAll('.station').forEach(el=>{
+    el.addEventListener('click',()=>peekTile(+el.dataset.idx));
   });
   if(document.getElementById('sticks').children.length===0){
     const s=document.getElementById('sticks');
@@ -823,20 +893,13 @@ function buildBoardDOM(){
     }
   }
 }
-function updateTileFaces(){
-  state.tiles.forEach((tile,idx)=>{
-    const el=document.querySelector(`.tile[data-idx="${idx}"]`);
-    el.className=`tile cat-${tile.cat}`+(CORNERS[idx]?' corner':'');
-    el.querySelector('.em').textContent=tile.em.split(' ')[0];
-  });
-}
 function renderTokens(positions){
-  document.querySelectorAll('.tile .tokens').forEach(el=>{el.innerHTML='';el.classList.remove('turn')});
+  document.querySelectorAll('.tokens-layer .tokens').forEach(el=>{el.innerHTML='';el.classList.remove('turn')});
   if(!state||!state.units)return;
   const curUnit=state.turnList?unitOfPlayer(state,state.turnList[state.turnPtr]):-1;
   const leader=findLeader(state);
   positions.forEach(p=>{
-    const holder=document.querySelector(`.tile[data-idx="${p.pos}"] .tokens`);
+    const holder=document.querySelector(`.tokens-layer .tokens[data-idx="${p.pos}"]`);
     if(!holder)return;
     const unit=state.units[p.ui];
     const name=pieceOwner(unit,p.pi,state.config.mode);
@@ -919,7 +982,7 @@ function renderChooseUI(){
     const btn=document.createElement('button');
     btn.className='choosebtn';
     const name=pieceOwner(unit,pi,state.config.mode);
-    const spot=piece.pos===0?'출발점':piece.pos+'번 칸';
+    const spot=piece.pos===0?'광운대(출발점)':STATIONS[piece.pos].name;
     btn.innerHTML=`<img src="${IMG[name]}" alt=""><div class="lbl">${spot}</div>`;
     btn.onclick=()=>choosePiece(pi);
     el.appendChild(btn);
@@ -1093,7 +1156,7 @@ function playThrowSequence(st){
   },1850);
 }
 function hopTokens(pos,ui,pi){
-  const holder=document.querySelector(`.tile[data-idx="${pos}"] .tokens`);
+  const holder=document.querySelector(`.tokens-layer .tokens[data-idx="${pos}"]`);
   if(!holder)return;
   const sel=pi!==undefined
     ?`.token[data-unit="${ui}"][data-piece="${pi}"]`
@@ -1107,13 +1170,14 @@ function hopTokens(pos,ui,pi){
 function afterMove(st){
   renderTokens(allPiecePositions(st));
   const pos=st.units[st.last.unitIdx].pieces[st.last.pieceIdx].pos;
-  const tileEl=document.querySelector(`.tile[data-idx="${pos}"]`);
-  if(tileEl){tileEl.classList.add('flash');setTimeout(()=>tileEl.classList.remove('flash'),1100);}
-  if(st.last.captures&&st.last.captures.length&&tileEl){
-    spawnMiniConfetti(tileEl,42,['#FF4D5E','#FFD9CE','#F5C044','#FF5C3D']);
+  const stEl=document.querySelector(`.station[data-idx="${pos}"]`);
+  const holder=document.querySelector(`.tokens-layer .tokens[data-idx="${pos}"]`);
+  if(stEl){stEl.classList.add('flash');setTimeout(()=>stEl.classList.remove('flash'),1100);}
+  if(st.last.captures&&st.last.captures.length&&holder){
+    spawnMiniConfetti(holder,42,['#FF4D5E','#FFD9CE','#F5C044','#FF5C3D']);
     const burst=document.createElement('div');
     burst.className='bigburst';burst.textContent='💥';
-    tileEl.appendChild(burst);setTimeout(()=>burst.remove(),1000);
+    holder.appendChild(burst);setTimeout(()=>burst.remove(),1000);
     if(navigator.vibrate)navigator.vibrate([80,40,80,40,120]);
   }
   setTimeout(()=>{
@@ -1197,7 +1261,7 @@ function peekTile(idx){
   document.getElementById('mFace').style.display='none';
   document.getElementById('mEm').textContent=t.em;
   document.getElementById('mText').textContent=t.txt;
-  document.getElementById('mWho').textContent=`${idx}번 칸`;
+  document.getElementById('mWho').textContent=`🚉 ${STATIONS[idx].name} (${idx}번)`;
   document.getElementById('mWait').style.display='none';
   const btn=document.getElementById('mDone');
   btn.style.display='block';btn.textContent='닫기';
