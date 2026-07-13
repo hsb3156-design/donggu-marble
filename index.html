@@ -669,6 +669,7 @@ function buildBoardDOM(){
   b.querySelectorAll('.tile').forEach(t=>t.remove());
   perimeterCells().forEach(([r,c],idx)=>{
     const t=document.createElement('div');
+    t.className='tile';
     t.dataset.idx=idx;
     t.style.gridRow=r+1;t.style.gridColumn=c+1;
     t.innerHTML=`<span class="em"></span><div class="tokens"></div>`;
