@@ -307,6 +307,26 @@ input.txt:focus{outline:2px solid var(--soju)}
 .quiz-time{font-size:12px;color:#B08A4E;font-weight:900}
 .quiz-result{font-family:'Black Han Sans';font-size:24px;margin-top:12px;line-height:1.3}
 .quiz-result .sub{font-family:'Noto Sans KR';font-size:13px;font-weight:700;color:#8A6B3F;margin-top:4px}
+/* 대상 선택 (swap/push) */
+.target-box{margin:10px 0 6px}
+.target-title{font-family:'Black Han Sans';font-size:15px;color:#B4581E;margin-bottom:8px;letter-spacing:.5px}
+.target-list{display:flex;flex-direction:column;gap:8px}
+.target-btn{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 12px;border-radius:12px;
+  background:#FFF9EE;border:2px solid #E4CFA3;
+  cursor:pointer;transition:transform .08s,border-color .15s;
+  width:100%;text-align:left;font-family:inherit;
+}
+.target-btn:active{transform:scale(.97);border-color:var(--lantern)}
+.target-btn:hover{border-color:#C88A3A}
+.target-btn .tfaces{display:flex;flex:none}
+.target-btn .tface{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.9);object-fit:cover;background:#000;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.target-btn .tface+.tface{margin-left:-10px}
+.target-btn .tinfo{flex:1;min-width:0}
+.target-btn .tnm{font-size:14px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.target-btn .tpos{font-size:11px;color:#8A6B3F;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.target-btn.back{background:linear-gradient(90deg,#FFE0E4,#FFF3C9)}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
 .rankings{margin:14px 0;display:flex;flex-direction:column;gap:7px;text-align:left}
 .rankrow{
@@ -458,6 +478,10 @@ input.txt:focus{outline:2px solid var(--soju)}
       <button class="btn green" id="quizSubmit" style="margin-top:8px">제출!</button>
       <div class="quiz-result" id="quizResult" style="display:none"></div>
     </div>
+    <div class="target-box" id="targetBox" style="display:none">
+      <div class="target-title" id="targetTitle">대상을 선택하세요 👇</div>
+      <div class="target-list" id="targetList"></div>
+    </div>
     <button class="btn green" id="mDone">미션 완료 ✔</button>
     <div class="waiting" id="mWait" style="display:none"></div>
   </div>
@@ -537,11 +561,11 @@ const POOL={
   ['🇺🇸','다음 내 턴까지 모든 사람에게 영어 사용 (실패 시 원샷)'],
  ],
  chance:[
-  ['🔀','원하는 사람과 내 말 위치 바꾸기'],
-  ['⬅️','원하는 사람 말 3칸 뒤로 보내기'],
+  ['🔀','원하는 사람과 내 말 위치 바꾸기',{kind:'swap'}],
+  ['⬅️','원하는 사람 말 3칸 뒤로 보내기',{kind:'push'}],
   ['🎯','아무나 한 명 지목해서 마시게 하기'],
   ['💧','물 한 잔 마시고 휴식'],
-  ['🕳️','블랙홀! 가장 뒤에 있는 사람과 내 말 위치 바꾸기'],
+  ['🕳️','블랙홀! 가장 뒤에 있는 사람과 내 말 위치 바꾸기',{kind:'blackhole'}],
   ['🎲','본인이 좋아하는 랜덤게임 하나 진행'],
  ]
 };
@@ -1244,6 +1268,7 @@ function syncModals(st){
       document.getElementById('mWho').textContent=`${L.player}`;
       document.getElementById('mDone').style.display='none';
       document.getElementById('mWait').style.display='none';
+      document.getElementById('targetBox').style.display='none';
       document.getElementById('quizBox').style.display='block';
       if(mine){
         startQuiz();
@@ -1258,7 +1283,43 @@ function syncModals(st){
       document.getElementById('missionBg').classList.add('show');
       return;
     }
+    // 대상 지목 미션 (swap/push)
+    if(m.kind==='swap'||m.kind==='push'){
+      document.getElementById('mText').textContent=m.txt;
+      document.getElementById('mWho').textContent=`${L.player} 당첨!`;
+      document.getElementById('mDone').style.display='none';
+      document.getElementById('quizBox').style.display='none';
+      if(mine){
+        document.getElementById('mWait').style.display='none';
+        document.getElementById('targetTitle').textContent=(m.kind==='swap'?'🔀 위치 바꿀 대상 선택':'⬅️ 3칸 뒤로 보낼 대상 선택');
+        renderTargets(m.kind,L.unitIdx);
+        document.getElementById('targetBox').style.display='block';
+      }else{
+        document.getElementById('targetBox').style.display='none';
+        document.getElementById('mWait').style.display='block';
+        document.getElementById('mWait').textContent=`${L.player}이(가) 대상 고르는 중...`;
+      }
+      document.getElementById('missionBg').classList.add('show');
+      return;
+    }
+    // 블랙홀 (자동 실행 버튼)
+    if(m.kind==='blackhole'){
+      document.getElementById('mText').textContent=m.txt;
+      document.getElementById('mWho').textContent=`${L.player} 당첨!`;
+      document.getElementById('quizBox').style.display='none';
+      document.getElementById('targetBox').style.display='none';
+      const doneBtn=document.getElementById('mDone');
+      doneBtn.style.display=mine?'block':'none';
+      doneBtn.textContent='🕳️ 블랙홀 실행!';
+      doneBtn.onclick=()=>executeBlackhole(L.unitIdx);
+      const w=document.getElementById('mWait');
+      w.style.display=mine?'none':'block';
+      w.textContent=`${L.player}이(가) 블랙홀 실행 중...`;
+      document.getElementById('missionBg').classList.add('show');
+      return;
+    }
     document.getElementById('quizBox').style.display='none';
+    document.getElementById('targetBox').style.display='none';
     document.getElementById('mText').textContent=m.txt;
     document.getElementById('mWho').textContent=`${L.player} 당첨!`
       +(st.config.mode==='team'?' (팀원도 응원 필수)':'')
@@ -1300,6 +1361,7 @@ function closeAllModals(){
   document.getElementById('missionBg').classList.remove('show');
   document.getElementById('winBg').classList.remove('show');
   const qb=document.getElementById('quizBox');if(qb)qb.style.display='none';
+  const tb=document.getElementById('targetBox');if(tb)tb.style.display='none';
   clearQuiz();
 }
 
@@ -1391,6 +1453,100 @@ function clearQuiz(){
   quizState=null;
 }
 
+/* ═══════════ 위치 스왑/푸시/블랙홀 미션 ═══════════ */
+function unitProgress(u){
+  return u.pieces.reduce((s,p)=>s+p.laps*N+p.pos,0);
+}
+function renderTargets(kind,myUi){
+  const list=document.getElementById('targetList');list.innerHTML='';
+  state.units.forEach((u,i)=>{
+    if(i===myUi)return;
+    const btn=document.createElement('button');
+    btn.className='target-btn';
+    const faces=u.members.map(n=>`<img class="tface" src="${IMG[n]}" alt="">`).join('');
+    const positions=u.pieces.map(p=>p.pos===0?'출발점':STATIONS[p.pos].name).join(' · ');
+    const label=u.label||u.members.join('·');
+    btn.innerHTML=`<div class="tfaces">${faces}</div>
+      <div class="tinfo"><div class="tnm">${label}</div><div class="tpos">📍 ${positions}</div></div>`;
+    btn.onclick=()=>{
+      if(kind==='swap')executeSwap(myUi,i);
+      else if(kind==='push')executePush(myUi,i);
+    };
+    list.appendChild(btn);
+  });
+  if(list.children.length===0){
+    list.innerHTML='<div style="color:#8A6B3F;font-size:13px;text-align:center;padding:10px">지목할 상대가 없어요 😅</div>';
+  }
+}
+async function executeSwap(myUi,targetUi){
+  if(!state.last||state.last.player!==myName()||state.phase!=='mission')return;
+  const st=JSON.parse(JSON.stringify(state));
+  const my=st.units[myUi],tg=st.units[targetUi];
+  const len=Math.min(my.pieces.length,tg.pieces.length);
+  for(let i=0;i<len;i++){
+    const tmp=my.pieces[i].pos;
+    my.pieces[i].pos=tg.pieces[i].pos;
+    tg.pieces[i].pos=tmp;
+    // laps도 스왑 (앞뒤 차이가 크면 진행도 반전이 자연스러움)
+    const tmpL=my.pieces[i].laps;
+    my.pieces[i].laps=tg.pieces[i].laps;
+    tg.pieces[i].laps=tmpL;
+  }
+  const tgLabel=tg.label||tg.members.join('·');
+  st.logs=st.logs||[];
+  st.logs.unshift(`🔀 <b>${st.last.player}</b>이(가) <b>${tgLabel}</b>와 말 위치 교환!`);
+  st.logs=st.logs.slice(0,20);
+  clearQuiz();
+  if(!st.last.extra)st.turnPtr=(st.turnPtr+1)%st.turnList.length;
+  st.phase='throw';st.seq++;
+  try{await set(roomRef(),st);}catch(e){toast('전송 실패!');}
+}
+async function executePush(myUi,targetUi){
+  if(!state.last||state.last.player!==myName()||state.phase!=='mission')return;
+  const st=JSON.parse(JSON.stringify(state));
+  const tg=st.units[targetUi];
+  tg.pieces.forEach(p=>{
+    // 3칸 뒤로. laps는 유지 (반환 방지)
+    p.pos=Math.max(0,p.pos-3);
+  });
+  const tgLabel=tg.label||tg.members.join('·');
+  st.logs=st.logs||[];
+  st.logs.unshift(`⬅️ <b>${st.last.player}</b>이(가) <b>${tgLabel}</b>의 말을 3칸 뒤로! 😈`);
+  st.logs=st.logs.slice(0,20);
+  clearQuiz();
+  if(!st.last.extra)st.turnPtr=(st.turnPtr+1)%st.turnList.length;
+  st.phase='throw';st.seq++;
+  try{await set(roomRef(),st);}catch(e){toast('전송 실패!');}
+}
+async function executeBlackhole(myUi){
+  if(!state.last||state.last.player!==myName()||state.phase!=='mission')return;
+  const st=JSON.parse(JSON.stringify(state));
+  // 가장 뒤 유닛 찾기 (자기 포함해서 최소 진행도)
+  let backIdx=-1,backScore=Infinity;
+  st.units.forEach((u,i)=>{
+    const score=unitProgress(u);
+    if(score<backScore){backScore=score;backIdx=i;}
+  });
+  st.logs=st.logs||[];
+  if(backIdx===-1||backIdx===myUi){
+    st.logs.unshift(`🕳️ <b>${st.last.player}</b> 블랙홀! 이미 꼴찌라 효과 없음 😅`);
+  }else{
+    const my=st.units[myUi],back=st.units[backIdx];
+    const len=Math.min(my.pieces.length,back.pieces.length);
+    for(let i=0;i<len;i++){
+      const tmp=my.pieces[i].pos;my.pieces[i].pos=back.pieces[i].pos;back.pieces[i].pos=tmp;
+      const tmpL=my.pieces[i].laps;my.pieces[i].laps=back.pieces[i].laps;back.pieces[i].laps=tmpL;
+    }
+    const backLabel=back.label||back.members.join('·');
+    st.logs.unshift(`🕳️ <b>${st.last.player}</b> 블랙홀! 꼴찌 <b>${backLabel}</b>와 위치 교환!`);
+  }
+  st.logs=st.logs.slice(0,20);
+  clearQuiz();
+  if(!st.last.extra)st.turnPtr=(st.turnPtr+1)%st.turnList.length;
+  st.phase='throw';st.seq++;
+  try{await set(roomRef(),st);}catch(e){toast('전송 실패!');}
+}
+
 async function missionDone(quizResult){
   if(!state.last||state.last.player!==myName()||state.phase!=='mission')return;
   const modal=document.querySelector('#missionBg .modal');
@@ -1424,6 +1580,7 @@ function peekTile(idx){
   document.getElementById('mWho').textContent=`🚉 ${STATIONS[idx].name} (${idx}번)`;
   document.getElementById('mWait').style.display='none';
   document.getElementById('quizBox').style.display='none';
+  document.getElementById('targetBox').style.display='none';
   const btn=document.getElementById('mDone');
   btn.style.display='block';btn.textContent='닫기';
   btn.onclick=()=>{document.getElementById('missionBg').classList.remove('show');};
