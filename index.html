@@ -186,26 +186,26 @@ input.txt:focus{outline:2px solid var(--soju)}
   30%{opacity:1;transform:translate(-50%,-50%) scale(1.6) rotate(120deg)}
   100%{opacity:0;transform:translate(-50%,-140%) scale(2.2) rotate(360deg)}
 }
-.center{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(36,26,56,.94);
-  border:2px solid var(--wood);
-  border-radius:16px;padding:10px 14px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-  z-index:10;min-width:170px;max-width:60%;
-  box-shadow:0 6px 30px rgba(0,0,0,.5);
+.controls{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(36,26,56,.75);
+  border:1.5px solid rgba(245,192,68,.5);
+  border-radius:14px;
+  padding:8px 12px;margin-bottom:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
 }
-.turnface{width:clamp(38px,11vw,52px);height:clamp(38px,11vw,52px);border:3px solid var(--wood);box-shadow:0 0 14px rgba(245,192,68,.5)}
-.turnname{font-family:'Black Han Sans';font-size:clamp(16px,5vw,23px);text-align:center;line-height:1.1}
-.turnsub{font-size:11.5px;color:#BFA9E8;text-align:center;margin-top:-4px}
-.sticks{display:flex;gap:7px;height:clamp(50px,15vw,74px);align-items:center;perspective:500px}
-.stick{width:clamp(12px,3.6vw,17px);height:100%;border-radius:9px;position:relative;transform-style:preserve-3d;transition:transform .15s}
-.stick .stface{position:absolute;inset:0;border-radius:9px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly}
+.ctrl-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.ctrl-info{min-width:0;overflow:hidden}
+.turnface{width:38px;height:38px;border:3px solid var(--wood);box-shadow:0 0 12px rgba(245,192,68,.45);flex:none}
+.turnname{font-family:'Black Han Sans';font-size:16px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.turnsub{font-size:11px;color:#BFA9E8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sticks{display:flex;gap:5px;height:46px;align-items:center;perspective:400px;flex:none}
+.stick{width:11px;height:100%;border-radius:8px;position:relative;transform-style:preserve-3d;transition:transform .15s}
+.stick .stface{position:absolute;inset:0;border-radius:8px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly}
 .stick .flat{background:linear-gradient(90deg,#FFE9B8,#F5C044 60%,#D89B2E);box-shadow:inset 2px 0 3px rgba(255,255,255,.6)}
 .stick .round{background:linear-gradient(90deg,#8A5A26,#5E3A14);transform:rotateY(180deg)}
-.stick .round i{width:60%;height:3px;border-radius:2px;background:rgba(255,230,170,.5)}
-.stick .flat .mark{font-size:10px;color:#B4581E;font-weight:900}
+.stick .round i{width:60%;height:2.5px;border-radius:2px;background:rgba(255,230,170,.5)}
+.stick .flat .mark{font-size:9px;color:#B4581E;font-weight:900}
 .stick.tossing{animation:toss .7s cubic-bezier(.3,1.4,.5,1)}
 @keyframes toss{
   0%{transform:translateY(0) rotateY(0)}
@@ -217,23 +217,23 @@ input.txt:focus{outline:2px solid var(--soju)}
 .stick.tossed-flat{transform:rotateY(1080deg)}
 .stamp{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
-  width:clamp(84px,26vw,116px);height:clamp(84px,26vw,116px);border-radius:50%;
+  width:clamp(90px,28vw,130px);height:clamp(90px,28vw,130px);border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#FF7A5C,#D93B1F 70%);
   border:4px solid #FFD9CE;box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 0 20px rgba(0,0,0,.25);
   display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;pointer-events:none;
 }
 .stamp.show{animation:stampin .55s cubic-bezier(.2,2.2,.4,1) forwards}
 @keyframes stampin{0%{transform:translate(-50%,-50%) scale(2.4) rotate(18deg);opacity:0}60%{opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(-6deg);opacity:1}}
-.stamp .big{font-family:'Black Han Sans';font-size:clamp(30px,9vw,44px);color:#FFF3EC;text-shadow:0 3px 0 rgba(0,0,0,.3)}
+.stamp .big{font-family:'Black Han Sans';font-size:clamp(32px,10vw,48px);color:#FFF3EC;text-shadow:0 3px 0 rgba(0,0,0,.3)}
 .stamp .small{font-size:11px;color:#FFD9CE;font-weight:700;margin-top:-2px}
 .throwbtn{
-  padding:11px 26px;border-radius:999px;font-family:'Black Han Sans';
-  font-size:clamp(15px,4.4vw,19px);letter-spacing:1px;background:var(--lantern);color:#fff;
-  box-shadow:0 4px 0 #C23A20,0 6px 20px rgba(255,92,61,.4);transition:transform .08s;
+  padding:10px 20px;border-radius:999px;font-family:'Black Han Sans';
+  font-size:15px;letter-spacing:1px;background:var(--lantern);color:#fff;
+  box-shadow:0 4px 0 #C23A20,0 6px 20px rgba(255,92,61,.4);transition:transform .08s;flex:none;
 }
 .throwbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #C23A20}
 .throwbtn:disabled{opacity:.4;box-shadow:none}
-.waitnote{font-size:12px;color:#8E7BB5;text-align:center;min-height:16px}
+.waitnote{font-size:12px;color:#8E7BB5;text-align:center;min-height:16px;margin-bottom:8px}
 .waitnote b{color:var(--soju)}
 .pbar{display:flex;gap:6px;margin-top:12px;overflow-x:auto;padding-bottom:4px}
 .pchip{flex:1;min-width:82px;border-radius:12px;padding:8px 6px;text-align:center;background:rgba(255,246,230,.06);border:1px solid rgba(255,246,230,.12)}
@@ -288,9 +288,11 @@ input.txt:focus{outline:2px solid var(--soju)}
 .modal .waiting{margin-top:16px;font-size:14px;color:#B08A4E;font-weight:700}
 .modal.dark{background:linear-gradient(170deg,#2E1F52,#1C1338);color:var(--paper)}
 .editlist{text-align:left;display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.editrow{display:flex;gap:8px;align-items:center}
-.editrow .no{font-family:'Black Han Sans';width:24px;color:#B4581E;font-size:14px;flex:none;text-align:right}
-.editrow input{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid #E4CFA3;background:#fff;font-size:13.5px;font-family:inherit;min-width:0}
+.editrow{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+.editrow .no{font-family:'Black Han Sans';width:22px;color:#B4581E;font-size:13px;flex:none;text-align:right}
+.editrow .stname{font-weight:900;font-size:12px;flex:none;min-width:56px;white-space:nowrap;letter-spacing:-.3px}
+.editrow .emo{font-size:14px;flex:none}
+.editrow input{flex:1;padding:8px 10px;border-radius:9px;border:1.5px solid #E4CFA3;background:#fff;font-size:13px;font-family:inherit;min-width:0}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
 .rankings{margin:14px 0;display:flex;flex-direction:column;gap:7px;text-align:left}
 .rankrow{
@@ -404,17 +406,22 @@ input.txt:focus{outline:2px solid var(--soju)}
     <button class="btn ghost" style="width:auto;padding:7px 12px;font-size:13px" onclick="openEditor()">✏️</button>
   </div>
 
-  <div class="board" id="board">
-    <div class="center">
+  <div class="controls">
+    <div class="ctrl-left">
       <img class="face turnface" id="turnFace" alt="">
-      <div class="turnname" id="turnName"></div>
-      <div class="turnsub" id="turnSub"></div>
-      <div class="sticks" id="sticks"></div>
-      <button class="throwbtn" id="throwBtn" onclick="throwYut()">윷 던지기!</button>
-      <div class="chooseUI" id="chooseUI"></div>
-      <div class="waitnote" id="waitNote"></div>
-      <div class="stamp" id="stamp"><div class="big" id="stampBig"></div><div class="small" id="stampSmall"></div></div>
+      <div class="ctrl-info">
+        <div class="turnname" id="turnName"></div>
+        <div class="turnsub" id="turnSub"></div>
+      </div>
     </div>
+    <div class="sticks" id="sticks"></div>
+    <button class="throwbtn" id="throwBtn" onclick="throwYut()">던지기!</button>
+  </div>
+  <div class="chooseUI" id="chooseUI"></div>
+  <div class="waitnote" id="waitNote"></div>
+
+  <div class="board" id="board">
+    <div class="stamp" id="stamp"><div class="big" id="stampBig"></div><div class="small" id="stampSmall"></div></div>
   </div>
 
   <div class="pbar" id="pbar"></div>
@@ -824,13 +831,13 @@ function renderGameStatic(){
 }
 function stationLabelPos(idx){
   const s=STATIONS[idx];
-  if(idx===0)return{x:0,y:44,anchor:'middle'};
-  if(idx===6)return{x:0,y:-24,anchor:'middle'};
-  if(idx===12)return{x:26,y:0,anchor:'start'};
-  if(idx===18)return{x:0,y:-24,anchor:'middle'};
+  if(idx===0)return{x:0,y:32,anchor:'middle'};
+  if(idx===6)return{x:0,y:-22,anchor:'middle'};
+  if(idx===12)return{x:22,y:-2,anchor:'start'};
+  if(idx===18)return{x:0,y:-22,anchor:'middle'};
   if(idx===11)return{x:16,y:4,anchor:'start'};
   if(idx===16)return{x:0,y:-14,anchor:'middle'};
-  if(s.y>=430)return{x:0,y:30,anchor:'middle'};
+  if(s.y>=430)return{x:0,y:22,anchor:'middle'};
   if(s.x>=395)return{x:14,y:4,anchor:'start'};
   if(s.y<=140)return{x:0,y:-14,anchor:'middle'};
   if(s.x<=100)return{x:14,y:4,anchor:'start'};
@@ -863,8 +870,8 @@ function buildBoardDOM(){
   const b=document.getElementById('board');
   b.querySelectorAll('svg,.tokens-layer').forEach(el=>el.remove());
   const stationsHTML=STATIONS.map((_,i)=>renderStationSVG(i)).join('');
-  const svg=`<svg id="boardSvg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans KR, sans-serif">
-    <g opacity=".07" stroke="#666" stroke-width=".6">
+  const svg=`<svg id="boardSvg" viewBox="40 70 425 425" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans KR, sans-serif">
+    <g opacity=".05" stroke="#666" stroke-width=".6">
       <line x1="0" y1="100" x2="500" y2="100"/><line x1="0" y1="200" x2="500" y2="200"/>
       <line x1="0" y1="300" x2="500" y2="300"/><line x1="0" y1="400" x2="500" y2="400"/>
       <line x1="100" y1="0" x2="100" y2="500"/><line x1="200" y1="0" x2="200" y2="500"/>
@@ -875,9 +882,11 @@ function buildBoardDOM(){
     <path d="M 65 400 Q 55 440 70 440" fill="none" stroke="#8AB4C8" stroke-width="4" stroke-dasharray="6 5" opacity=".7"/>
     ${stationsHTML}
   </svg>`;
-  const tokensHTML=STATIONS.map((s,idx)=>
-    `<div class="tokens" data-idx="${idx}" style="left:${s.x/500*100}%;top:${s.y/500*100}%;"></div>`
-  ).join('');
+  const tokensHTML=STATIONS.map((s,idx)=>{
+    const px=((s.x-40)/425*100);
+    const py=((s.y-70)/425*100);
+    return `<div class="tokens" data-idx="${idx}" style="left:${px}%;top:${py}%;"></div>`;
+  }).join('');
   b.insertAdjacentHTML('afterbegin',svg);
   b.insertAdjacentHTML('beforeend',`<div class="tokens-layer" id="tokensLayer">${tokensHTML}</div>`);
   b.querySelectorAll('.station').forEach(el=>{
@@ -1272,8 +1281,12 @@ window.openEditor=function(){
   if(!isHost()){toast('방장만 편집할 수 있어요');return;}
   const el=document.getElementById('editList');el.innerHTML='';
   state.tiles.forEach((t,i)=>{
+    const st=STATIONS[i];
+    const lineColor=st.line===1?'#0052A4':'#00A5DE';
     const row=document.createElement('div');row.className='editrow';
-    row.innerHTML=`<span class="no">${i}</span><span>${t.em.split(' ')[0]}</span>
+    row.innerHTML=`<span class="no">${i}</span>
+      <span class="stname" style="color:${lineColor}">${st.name}</span>
+      <span class="emo">${t.em.split(' ')[0]}</span>
       <input value="${t.txt.replace(/"/g,'&quot;')}" data-i="${i}">`;
     el.appendChild(row);
   });
