@@ -293,6 +293,20 @@ input.txt:focus{outline:2px solid var(--soju)}
 .editrow .stname{font-weight:900;font-size:12px;flex:none;min-width:56px;white-space:nowrap;letter-spacing:-.3px}
 .editrow .emo{font-size:14px;flex:none}
 .editrow input{flex:1;padding:8px 10px;border-radius:9px;border:1.5px solid #E4CFA3;background:#fff;font-size:13px;font-family:inherit;min-width:0}
+/* 계산 퀴즈 */
+.quiz-box{margin:10px 0 4px}
+.quiz-q{font-family:'Black Han Sans';font-size:42px;color:#0052A4;margin:8px 0 12px;letter-spacing:2px}
+.quiz-input{
+  width:70%;max-width:200px;padding:12px 10px;font-size:28px;text-align:center;
+  border:2px solid #E4CFA3;border-radius:12px;background:#fff;color:var(--ink);
+  font-family:'Black Han Sans';letter-spacing:2px;
+}
+.quiz-input:focus{outline:2px solid var(--soju);border-color:var(--soju)}
+.quiz-bar-wrap{width:80%;max-width:240px;height:8px;background:#EAD9AC;border-radius:4px;overflow:hidden;margin:12px auto 4px}
+.quiz-bar{height:100%;background:#F5C044;transition:width .1s linear,background .3s;width:100%}
+.quiz-time{font-size:12px;color:#B08A4E;font-weight:900}
+.quiz-result{font-family:'Black Han Sans';font-size:24px;margin-top:12px;line-height:1.3}
+.quiz-result .sub{font-family:'Noto Sans KR';font-size:13px;font-weight:700;color:#8A6B3F;margin-top:4px}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
 .rankings{margin:14px 0;display:flex;flex-direction:column;gap:7px;text-align:left}
 .rankrow{
@@ -436,6 +450,14 @@ input.txt:focus{outline:2px solid var(--soju)}
     <div class="em" id="mEm"></div>
     <h2 id="mText"></h2>
     <div class="who" id="mWho"></div>
+    <div class="quiz-box" id="quizBox" style="display:none">
+      <div class="quiz-q" id="quizQ"></div>
+      <input class="quiz-input" id="quizInput" type="number" inputmode="numeric" autocomplete="off">
+      <div class="quiz-bar-wrap"><div class="quiz-bar" id="quizBar"></div></div>
+      <div class="quiz-time" id="quizTime">5.0초</div>
+      <button class="btn green" id="quizSubmit" style="margin-top:8px">제출!</button>
+      <div class="quiz-result" id="quizResult" style="display:none"></div>
+    </div>
     <button class="btn green" id="mDone">미션 완료 ✔</button>
     <div class="waiting" id="mWait" style="display:none"></div>
   </div>
@@ -495,24 +517,32 @@ const TEAMNAME = ['1팀','2팀','3팀'];
 /* ═══════════ 미션 데이터 ═══════════ */
 const POOL={
  drink:[
-  ['🍻','왼쪽 사람과 러브샷!'],['☠️','내 잔 원샷!'],['🍺','소맥 말아서 마시기'],
-  ['3️⃣','3·6·9 게임 시작 (본인부터)'],['🏢','아파트 게임 시작!'],
-  ['👀','눈치게임 스타트! 꼴찌가 마시기'],['🍓','딸기 게임 시작 (본인부터)'],
-  ['🐰','바니바니 게임 시작!'],['🖼️','이미지 게임: "오늘 제일 먼저 취할 사람" 지목'],
-  ['🤥','라이어 게임 한 판! 걸린 사람 마시기'],['🎤','노래 한 소절, 못 부르면 반샷'],
-  ['🔗','양옆 사람과 셋이서 짠! 다같이 반샷'],
+  ['☠️','내 잔 원샷!'],
+  ['🍶','왼쪽 사람과 소주 원샷!'],
+  ['🥂','본인 빼고 다같이 반샷'],
+  ['🍺','소맥 말아서 마시기'],
+  ['👆','아무나 지목해서 마시게 하기'],
+  ['🤫','침묵 눈치게임: 손가락 1~5 동시에 펴서 겹친 사람 마시기'],
+  ['📱','폰 배터리 % 가장 낮은 사람 원샷'],
+  ['🧮','5초 안에 계산 문제 풀기! (실패 시 원샷)',{kind:'quiz'}],
+  ['✋','참참참! 5초 안에 결정, 진 사람 원샷'],
+  ['✂️','아무나 지목해서 가위바위보, 진 사람 마시기'],
+  ['🖐️','손가락 접기 게임 (5개 접었다~) · 걸리면 마시기'],
  ],
  penalty:[
-  ['🥰','애교 3종 세트 (거부 시 원샷)'],['🎭','성대모사 하나! 실패하면 반샷'],
-  ['📸','폰 사진첩 최근 사진 1장 공개'],['👉','오른쪽 사람이 시키는 거 하나 하기'],
-  ['⏱️','10초 안에 개인기! 없으면 원샷'],['✂️','아무나 지목 가위바위보, 진 사람 마시기'],
-  ['💃','막춤 10초 (음악 없이)'],['💘','첫사랑 이야기 or 원샷 중 선택'],
-  ['🥤','물 or 소주 복불복! 옆 사람이 따라줌'],['🗣️','아재개그 하나, 아무도 안 웃으면 마시기'],
+  ['📸','폰 사진첩 최근 사진 인물 수 세기 · 제일 적은 사람 마시기'],
+  ['👁️','아무나 지목해서 10초 눈싸움 · 먼저 웃거나 시선 피한 사람 마시기'],
+  ['🚢','타이타닉! 맥주잔에 소주잔 올려놓고 조금씩 부어서 침몰시킨 사람 원샷'],
+  ['🎩','다음 내 턴까지 모든 사람에게 존댓말 (실패 시 원샷)'],
+  ['🇺🇸','다음 내 턴까지 모든 사람에게 영어 사용 (실패 시 원샷)'],
  ],
  chance:[
-  ['🎯','찬스! 아무나 한 명 지목해서 마시게 하기'],['🥂','전체 건배! 다같이 반샷'],
-  ['🛡️','면제권 획득! 다음 벌칙 1회 패스'],['🔀','원하는 사람과 자리 바꾸기'],
-  ['💧','물 한 잔 마시고 휴식'],['🎁','다음 차례 사람의 미션을 대신 시킬 수 있음'],
+  ['🔀','원하는 사람과 내 말 위치 바꾸기'],
+  ['⬅️','원하는 사람 말 3칸 뒤로 보내기'],
+  ['🎯','아무나 한 명 지목해서 마시게 하기'],
+  ['💧','물 한 잔 마시고 휴식'],
+  ['🕳️','블랙홀! 가장 뒤에 있는 사람과 내 말 위치 바꾸기'],
+  ['🎲','본인이 좋아하는 랜덤게임 하나 진행'],
  ]
 };
 const CORNERS={
@@ -558,7 +588,7 @@ function buildTiles(){
   for(const[i,c]of Object.entries(CORNERS))tiles[i]={...c};
   const bag=[];
   for(const cat of ['drink','penalty','chance'])
-    POOL[cat].forEach(m=>bag.push({em:m[0],txt:m[1],cat}));
+    POOL[cat].forEach(m=>bag.push({em:m[0],txt:m[1],cat,...(m[2]||{})}));
   bag.sort(()=>Math.random()-.5);
   let k=0;
   for(let i=0;i<N;i++)if(!tiles[i])tiles[i]=bag[k++];
@@ -1090,11 +1120,11 @@ async function executeMovement(pieceIdx,move,flats,ui,name){
     let t=st.tiles[piece.pos],catKey=t.cat;
     if(piece.pos===12){
       const all=[];
-      for(const cat of ['drink','penalty','chance'])POOL[cat].forEach(m=>all.push({em:m[0],txt:m[1],cat}));
+      for(const cat of ['drink','penalty','chance'])POOL[cat].forEach(m=>all.push({em:m[0],txt:m[1],cat,...(m[2]||{})}));
       const pick=all[Math.floor(Math.random()*all.length)];
-      t={em:'🔑 '+pick.em,txt:'황금열쇠! → '+pick.txt};catKey=pick.cat;
+      t={em:'🔑 '+pick.em,txt:'황금열쇠! → '+pick.txt,kind:pick.kind};catKey=pick.cat;
     }
-    mission={em:t.em,txt:t.txt,cat:catKey};
+    mission={em:t.em,txt:t.txt,cat:catKey,kind:t.kind||null};
   }
 
   const[nm]=YUT_NAMES[move];
@@ -1207,12 +1237,33 @@ function syncModals(st){
     const emEl=document.getElementById('mEm');
     emEl.textContent=m.em;
     emEl.className='em anim-'+m.cat;
+    const mine=L.player===myName();
+    // 순간계산 미션 분기
+    if(m.kind==='quiz'){
+      document.getElementById('mText').textContent='순간계산 도전!';
+      document.getElementById('mWho').textContent=`${L.player}`;
+      document.getElementById('mDone').style.display='none';
+      document.getElementById('mWait').style.display='none';
+      document.getElementById('quizBox').style.display='block';
+      if(mine){
+        startQuiz();
+      }else{
+        document.getElementById('quizQ').textContent='🧮';
+        document.getElementById('quizInput').style.display='none';
+        document.getElementById('quizSubmit').style.display='none';
+        document.getElementById('quizBar').style.width='100%';
+        document.getElementById('quizTime').textContent=`${L.player} 계산 중...`;
+        document.getElementById('quizResult').style.display='none';
+      }
+      document.getElementById('missionBg').classList.add('show');
+      return;
+    }
+    document.getElementById('quizBox').style.display='none';
     document.getElementById('mText').textContent=m.txt;
     document.getElementById('mWho').textContent=`${L.player} 당첨!`
       +(st.config.mode==='team'?' (팀원도 응원 필수)':'')
       +(L.captures&&L.captures.length?`  💥 ${L.captures.join(', ')} 잡힘 → 전원 벌주 한 잔`:'')
       +(L.extra?'  ·  한 번 더 🎉':'');
-    const mine=L.player===myName();
     const doneBtn=document.getElementById('mDone');
     doneBtn.style.display=mine?'block':'none';
     doneBtn.textContent='미션 완료 ✔';doneBtn.onclick=missionDone;
@@ -1248,14 +1299,114 @@ function renderRankings(ranking){
 function closeAllModals(){
   document.getElementById('missionBg').classList.remove('show');
   document.getElementById('winBg').classList.remove('show');
+  const qb=document.getElementById('quizBox');if(qb)qb.style.display='none';
+  clearQuiz();
 }
 
 /* ═══════════ 미션 완료 ═══════════ */
-async function missionDone(){
+/* ═══════════ 순간계산 미션 ═══════════ */
+let quizState=null;
+function generateQuiz(){
+  const types=['+','-','*','/'];
+  const type=types[Math.floor(Math.random()*types.length)];
+  let a,b,answer,text;
+  if(type==='+'){
+    a=Math.floor(Math.random()*80)+15;b=Math.floor(Math.random()*80)+15;
+    answer=a+b;text=`${a} + ${b}`;
+  }else if(type==='-'){
+    a=Math.floor(Math.random()*70)+30;b=Math.floor(Math.random()*(a-10))+5;
+    answer=a-b;text=`${a} − ${b}`;
+  }else if(type==='*'){
+    a=Math.floor(Math.random()*8)+2;b=Math.floor(Math.random()*15)+5;
+    answer=a*b;text=`${a} × ${b}`;
+  }else{
+    b=Math.floor(Math.random()*8)+2;const q=Math.floor(Math.random()*15)+3;
+    a=b*q;answer=q;text=`${a} ÷ ${b}`;
+  }
+  return{text,answer};
+}
+function startQuiz(){
+  clearQuiz();
+  const q=generateQuiz();
+  quizState={q,finished:false};
+  document.getElementById('quizQ').textContent=q.text+' = ?';
+  const input=document.getElementById('quizInput');
+  input.value='';input.disabled=false;input.style.display='inline-block';
+  const submit=document.getElementById('quizSubmit');
+  submit.disabled=false;submit.style.display='inline-block';submit.textContent='제출!';
+  document.getElementById('quizResult').style.display='none';
+  document.getElementById('quizBar').style.width='100%';
+  document.getElementById('quizBar').style.background='#F5C044';
+  document.getElementById('quizTime').textContent='5.0초';
+  document.getElementById('quizTime').style.color='#B08A4E';
+  setTimeout(()=>{try{input.focus();}catch(e){}},120);
+  const start=Date.now();
+  quizState.interval=setInterval(()=>{
+    if(!quizState||quizState.finished){return;}
+    const left=5.0-(Date.now()-start)/1000;
+    if(left<=0){finishQuiz(false);return;}
+    document.getElementById('quizTime').textContent=left.toFixed(1)+'초';
+    document.getElementById('quizBar').style.width=(left/5*100)+'%';
+    if(left<2){
+      document.getElementById('quizBar').style.background='#D93B1F';
+      document.getElementById('quizTime').style.color='#D93B1F';
+    }
+  },100);
+  submit.onclick=()=>{
+    const v=input.value.trim();if(v==='')return;
+    finishQuiz(parseInt(v,10)===q.answer);
+  };
+  input.onkeydown=(e)=>{
+    if(e.key==='Enter'){
+      const v=input.value.trim();if(v==='')return;
+      finishQuiz(parseInt(v,10)===q.answer);
+    }
+  };
+}
+function finishQuiz(ok){
+  if(!quizState||quizState.finished)return;
+  quizState.finished=true;
+  if(quizState.interval)clearInterval(quizState.interval);
+  const q=quizState.q;
+  document.getElementById('quizInput').disabled=true;
+  document.getElementById('quizSubmit').style.display='none';
+  const res=document.getElementById('quizResult');
+  res.style.display='block';
+  if(ok){
+    res.innerHTML=`<span style="color:#0E9B60">정답! ✅</span><div class="sub">${q.text} = ${q.answer}</div>`;
+    const modal=document.querySelector('#missionBg .modal');
+    if(modal)spawnMiniConfetti(modal,28,['#1FD98B','#F5C044','#FFE9A8']);
+    setTimeout(()=>missionDone({ok:true,answer:q.answer}),1200);
+  }else{
+    res.innerHTML=`<span style="color:#D93B1F">실패 ❌</span><div class="sub">정답: ${q.answer} → 원샷 🍶</div>`;
+    if(navigator.vibrate)navigator.vibrate([100,50,100]);
+    setTimeout(()=>missionDone({ok:false,answer:q.answer}),1800);
+  }
+}
+function clearQuiz(){
+  if(quizState){
+    quizState.finished=true;
+    if(quizState.interval)clearInterval(quizState.interval);
+  }
+  quizState=null;
+}
+
+async function missionDone(quizResult){
   if(!state.last||state.last.player!==myName()||state.phase!=='mission')return;
   const modal=document.querySelector('#missionBg .modal');
-  if(modal)spawnMiniConfetti(modal,28,['#1FD98B','#F5C044','#FFE9A8','#FF5C3D']);
+  if(modal&&(!quizResult||quizResult.ok))spawnMiniConfetti(modal,28,['#1FD98B','#F5C044','#FFE9A8','#FF5C3D']);
   const st=JSON.parse(JSON.stringify(state));
+  if(quizResult&&typeof quizResult==='object'){
+    const nm=st.last.player;
+    st.logs=st.logs||[];
+    if(quizResult.ok){
+      st.logs.unshift(`🧮 <b>${nm}</b> 순간계산 정답! ✅`);
+    }else{
+      st.logs.unshift(`🧮 <b>${nm}</b> 순간계산 실패 → 원샷 🍶 (정답 ${quizResult.answer})`);
+    }
+    st.logs=st.logs.slice(0,20);
+  }
+  clearQuiz();
   if(!st.last.extra)st.turnPtr=(st.turnPtr+1)%st.turnList.length;
   st.phase='throw';st.seq++;
   try{await set(roomRef(),st);}catch(e){toast('전송 실패! 다시 눌러주세요');}
@@ -1272,6 +1423,7 @@ function peekTile(idx){
   document.getElementById('mText').textContent=t.txt;
   document.getElementById('mWho').textContent=`🚉 ${STATIONS[idx].name} (${idx}번)`;
   document.getElementById('mWait').style.display='none';
+  document.getElementById('quizBox').style.display='none';
   const btn=document.getElementById('mDone');
   btn.style.display='block';btn.textContent='닫기';
   btn.onclick=()=>{document.getElementById('missionBg').classList.remove('show');};
